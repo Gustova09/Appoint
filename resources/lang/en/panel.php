@@ -1,5 +1,6 @@
 <?php
 
 return [
-    'site_title' => 'Appointments',
+    'site_title' => 'Appoint',
+
 ];

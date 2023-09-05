@@ -3,7 +3,7 @@
 @can('service_create')
     <div style="margin-bottom: 10px;" class="row">
         <div class="col-lg-12">
-            <a class="btn btn-success" href="{{ route("admin.services.create") }}">
+            <a class="btn btn-success" href="{{ route('admin.services.create') }}">
                 {{ trans('global.add') }} {{ trans('cruds.service.title_singular') }}
             </a>
         </div>
@@ -36,10 +36,11 @@
                 </tr>
             </thead>
         </table>
-
-
     </div>
 </div>
+
+
+
 @endsection
 @section('scripts')
 @parent
@@ -90,14 +91,16 @@
 { data: 'price', name: 'price' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
+    orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
   };
-  $('.datatable-Service').DataTable(dtOverrideGlobals);
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
-        $($.fn.dataTable.tables(true)).DataTable()
-            .columns.adjust();
-    });
+  let table = $('.datatable-Service').DataTable(dtOverrideGlobals);
+  $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
+      $($.fn.dataTable.tables(true)).DataTable()
+          .columns.adjust();
+  });
+  
 });
 
 </script>

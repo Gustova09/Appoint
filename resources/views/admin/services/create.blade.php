@@ -7,38 +7,37 @@
     </div>
 
     <div class="card-body">
-        <form action="{{ route("admin.services.store") }}" method="POST" enctype="multipart/form-data">
+        <form method="POST" action="{{ route("admin.services.store") }}" enctype="multipart/form-data">
             @csrf
-            <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-                <label for="name">{{ trans('cruds.service.fields.name') }}*</label>
-                <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($service) ? $service->name : '') }}" required>
+            <div class="form-group">
+                <label class="required" for="name">{{ trans('cruds.service.fields.name') }}</label>
+                <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', '') }}" required>
                 @if($errors->has('name'))
-                    <em class="invalid-feedback">
+                    <div class="invalid-feedback">
                         {{ $errors->first('name') }}
-                    </em>
+                    </div>
                 @endif
-                <p class="helper-block">
-                    {{ trans('cruds.service.fields.name_helper') }}
-                </p>
+                <span class="help-block">{{ trans('cruds.service.fields.name_helper') }}</span>
             </div>
-            <div class="form-group {{ $errors->has('price') ? 'has-error' : '' }}">
+            <div class="form-group">
                 <label for="price">{{ trans('cruds.service.fields.price') }}</label>
-                <input type="number" id="price" name="price" class="form-control" value="{{ old('price', isset($service) ? $service->price : '') }}" step="0.01">
+                <input class="form-control {{ $errors->has('price') ? 'is-invalid' : '' }}" type="number" name="price" id="price" value="{{ old('price', '') }}" step="0.01">
                 @if($errors->has('price'))
-                    <em class="invalid-feedback">
+                    <div class="invalid-feedback">
                         {{ $errors->first('price') }}
-                    </em>
+                    </div>
                 @endif
-                <p class="helper-block">
-                    {{ trans('cruds.service.fields.price_helper') }}
-                </p>
+                <span class="help-block">{{ trans('cruds.service.fields.price_helper') }}</span>
             </div>
-            <div>
-                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+            <div class="form-group">
+                <button class="btn btn-danger" type="submit">
+                    {{ trans('global.save') }}
+                </button>
             </div>
         </form>
-
-
     </div>
 </div>
+
+
+
 @endsection

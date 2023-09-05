@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Resources\Admin\EmployeeResource;
+use App\Models\Employee;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,10 +26,9 @@ class EmployeesApiController extends Controller
     public function store(StoreEmployeeRequest $request)
     {
         $employee = Employee::create($request->all());
-        $employee->services()->sync($request->input('services', []));
 
         if ($request->input('photo', false)) {
-            $employee->addMedia(storage_path('tmp/uploads/' . $request->input('photo')))->toMediaCollection('photo');
+            $employee->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
         }
 
         return (new EmployeeResource($employee))
@@ -47,11 +46,13 @@ class EmployeesApiController extends Controller
     public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
         $employee->update($request->all());
-        $employee->services()->sync($request->input('services', []));
 
         if ($request->input('photo', false)) {
-            if (!$employee->photo || $request->input('photo') !== $employee->photo->file_name) {
-                $employee->addMedia(storage_path('tmp/uploads/' . $request->input('photo')))->toMediaCollection('photo');
+            if (! $employee->photo || $request->input('photo') !== $employee->photo->file_name) {
+                if ($employee->photo) {
+                    $employee->photo->delete();
+                }
+                $employee->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
             }
         } elseif ($employee->photo) {
             $employee->photo->delete();

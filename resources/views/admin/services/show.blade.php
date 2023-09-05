@@ -7,7 +7,12 @@
     </div>
 
     <div class="card-body">
-        <div class="mb-2">
+        <div class="form-group">
+            <div class="form-group">
+                <a class="btn btn-default" href="{{ route('admin.services.index') }}">
+                    {{ trans('global.back_to_list') }}
+                </a>
+            </div>
             <table class="table table-bordered table-striped">
                 <tbody>
                     <tr>
@@ -31,24 +36,20 @@
                             {{ trans('cruds.service.fields.price') }}
                         </th>
                         <td>
-                            ${{ $service->price }}
+                            {{ $service->price }}
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <a style="margin-top:20px;" class="btn btn-default" href="{{ url()->previous() }}">
-                {{ trans('global.back_to_list') }}
-            </a>
-        </div>
-
-        <nav class="mb-3">
-            <div class="nav nav-tabs">
-
+            <div class="form-group">
+                <a class="btn btn-default" href="{{ route('admin.services.index') }}">
+                    {{ trans('global.back_to_list') }}
+                </a>
             </div>
-        </nav>
-        <div class="tab-content">
-
         </div>
     </div>
 </div>
+
+
+
 @endsection

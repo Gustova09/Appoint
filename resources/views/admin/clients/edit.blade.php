@@ -7,51 +7,48 @@
     </div>
 
     <div class="card-body">
-        <form action="{{ route("admin.clients.update", [$client->id]) }}" method="POST" enctype="multipart/form-data">
-            @csrf
+        <form method="POST" action="{{ route("admin.clients.update", [$client->id]) }}" enctype="multipart/form-data">
             @method('PUT')
-            <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-                <label for="name">{{ trans('cruds.client.fields.name') }}</label>
-                <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($client) ? $client->name : '') }}">
+            @csrf
+            <div class="form-group">
+                <label class="required" for="name">{{ trans('cruds.client.fields.name') }}</label>
+                <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', $client->name) }}" required>
                 @if($errors->has('name'))
-                    <em class="invalid-feedback">
+                    <div class="invalid-feedback">
                         {{ $errors->first('name') }}
-                    </em>
+                    </div>
                 @endif
-                <p class="helper-block">
-                    {{ trans('cruds.client.fields.name_helper') }}
-                </p>
+                <span class="help-block">{{ trans('cruds.client.fields.name_helper') }}</span>
             </div>
-            <div class="form-group {{ $errors->has('phone') ? 'has-error' : '' }}">
+            <div class="form-group">
                 <label for="phone">{{ trans('cruds.client.fields.phone') }}</label>
-                <input type="text" id="phone" name="phone" class="form-control" value="{{ old('phone', isset($client) ? $client->phone : '') }}">
+                <input class="form-control {{ $errors->has('phone') ? 'is-invalid' : '' }}" type="text" name="phone" id="phone" value="{{ old('phone', $client->phone) }}">
                 @if($errors->has('phone'))
-                    <em class="invalid-feedback">
+                    <div class="invalid-feedback">
                         {{ $errors->first('phone') }}
-                    </em>
+                    </div>
                 @endif
-                <p class="helper-block">
-                    {{ trans('cruds.client.fields.phone_helper') }}
-                </p>
+                <span class="help-block">{{ trans('cruds.client.fields.phone_helper') }}</span>
             </div>
-            <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
+            <div class="form-group">
                 <label for="email">{{ trans('cruds.client.fields.email') }}</label>
-                <input type="email" id="email" name="email" class="form-control" value="{{ old('email', isset($client) ? $client->email : '') }}">
+                <input class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" type="email" name="email" id="email" value="{{ old('email', $client->email) }}">
                 @if($errors->has('email'))
-                    <em class="invalid-feedback">
+                    <div class="invalid-feedback">
                         {{ $errors->first('email') }}
-                    </em>
+                    </div>
                 @endif
-                <p class="helper-block">
-                    {{ trans('cruds.client.fields.email_helper') }}
-                </p>
+                <span class="help-block">{{ trans('cruds.client.fields.email_helper') }}</span>
             </div>
-            <div>
-                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+            <div class="form-group">
+                <button class="btn btn-danger" type="submit">
+                    {{ trans('global.save') }}
+                </button>
             </div>
         </form>
-
-
     </div>
 </div>
+
+
+
 @endsection
