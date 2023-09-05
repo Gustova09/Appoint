@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyEmployeeRequest;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
-use App\Service;
+use App\Models\Employee;
+use App\Models\Service;
 use Gate;
 use Illuminate\Http\Request;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -20,6 +21,8 @@ class EmployeesController extends Controller
 
     public function index(Request $request)
     {
+        abort_if(Gate::denies('employee_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         if ($request->ajax()) {
             $query = Employee::with(['services'])->select(sprintf('%s.*', (new Employee)->table));
             $table = Datatables::of($query);
@@ -43,16 +46,16 @@ class EmployeesController extends Controller
             });
 
             $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : "";
+                return $row->id ? $row->id : '';
             });
             $table->editColumn('name', function ($row) {
-                return $row->name ? $row->name : "";
+                return $row->name ? $row->name : '';
             });
             $table->editColumn('email', function ($row) {
-                return $row->email ? $row->email : "";
+                return $row->email ? $row->email : '';
             });
             $table->editColumn('phone', function ($row) {
-                return $row->phone ? $row->phone : "";
+                return $row->phone ? $row->phone : '';
             });
             $table->editColumn('photo', function ($row) {
                 if ($photo = $row->photo) {
@@ -65,14 +68,8 @@ class EmployeesController extends Controller
 
                 return '';
             });
-            $table->editColumn('services', function ($row) {
-                $labels = [];
-
-                foreach ($row->services as $service) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $service->name);
-                }
-
-                return implode(' ', $labels);
+            $table->addColumn('services_name', function ($row) {
+                return $row->services ? $row->services->name : '';
             });
 
             $table->rawColumns(['actions', 'placeholder', 'photo', 'services']);
@@ -87,7 +84,7 @@ class EmployeesController extends Controller
     {
         abort_if(Gate::denies('employee_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $services = Service::all()->pluck('name', 'id');
+        $services = Service::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         return view('admin.employees.create', compact('services'));
     }
@@ -95,10 +92,13 @@ class EmployeesController extends Controller
     public function store(StoreEmployeeRequest $request)
     {
         $employee = Employee::create($request->all());
-        $employee->services()->sync($request->input('services', []));
 
         if ($request->input('photo', false)) {
-            $employee->addMedia(storage_path('tmp/uploads/' . $request->input('photo')))->toMediaCollection('photo');
+            $employee->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
+        }
+
+        if ($media = $request->input('ck-media', false)) {
+            Media::whereIn('id', $media)->update(['model_id' => $employee->id]);
         }
 
         return redirect()->route('admin.employees.index');
@@ -108,21 +108,23 @@ class EmployeesController extends Controller
     {
         abort_if(Gate::denies('employee_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $services = Service::all()->pluck('name', 'id');
+        $services = Service::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $employee->load('services');
 
-        return view('admin.employees.edit', compact('services', 'employee'));
+        return view('admin.employees.edit', compact('employee', 'services'));
     }
 
     public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
         $employee->update($request->all());
-        $employee->services()->sync($request->input('services', []));
 
         if ($request->input('photo', false)) {
-            if (!$employee->photo || $request->input('photo') !== $employee->photo->file_name) {
-                $employee->addMedia(storage_path('tmp/uploads/' . $request->input('photo')))->toMediaCollection('photo');
+            if (! $employee->photo || $request->input('photo') !== $employee->photo->file_name) {
+                if ($employee->photo) {
+                    $employee->photo->delete();
+                }
+                $employee->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
             }
         } elseif ($employee->photo) {
             $employee->photo->delete();
@@ -151,8 +153,24 @@ class EmployeesController extends Controller
 
     public function massDestroy(MassDestroyEmployeeRequest $request)
     {
-        Employee::whereIn('id', request('ids'))->delete();
+        $employees = Employee::find(request('ids'));
+
+        foreach ($employees as $employee) {
+            $employee->delete();
+        }
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function storeCKEditorImages(Request $request)
+    {
+        abort_if(Gate::denies('employee_create') && Gate::denies('employee_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $model         = new Employee();
+        $model->id     = $request->input('crud_id', 0);
+        $model->exists = true;
+        $media         = $model->addMediaFromRequest('upload')->toMediaCollection('ck-media');
+
+        return response()->json(['id' => $media->id, 'url' => $media->getUrl()], Response::HTTP_CREATED);
     }
 }

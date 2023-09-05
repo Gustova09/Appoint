@@ -3,7 +3,7 @@
 @can('client_create')
     <div style="margin-bottom: 10px;" class="row">
         <div class="col-lg-12">
-            <a class="btn btn-success" href="{{ route("admin.clients.create") }}">
+            <a class="btn btn-success" href="{{ route('admin.clients.create') }}">
                 {{ trans('global.add') }} {{ trans('cruds.client.title_singular') }}
             </a>
         </div>
@@ -39,10 +39,11 @@
                 </tr>
             </thead>
         </table>
-
-
     </div>
 </div>
+
+
+
 @endsection
 @section('scripts')
 @parent
@@ -94,14 +95,16 @@
 { data: 'email', name: 'email' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
+    orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
   };
-  $('.datatable-Client').DataTable(dtOverrideGlobals);
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
-        $($.fn.dataTable.tables(true)).DataTable()
-            .columns.adjust();
-    });
+  let table = $('.datatable-Client').DataTable(dtOverrideGlobals);
+  $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
+      $($.fn.dataTable.tables(true)).DataTable()
+          .columns.adjust();
+  });
+  
 });
 
 </script>

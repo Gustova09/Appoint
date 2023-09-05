@@ -3,7 +3,7 @@
 @can('employee_create')
     <div style="margin-bottom: 10px;" class="row">
         <div class="col-lg-12">
-            <a class="btn btn-success" href="{{ route("admin.employees.create") }}">
+            <a class="btn btn-success" href="{{ route('admin.employees.create') }}">
                 {{ trans('global.add') }} {{ trans('cruds.employee.title_singular') }}
             </a>
         </div>
@@ -45,10 +45,11 @@
                 </tr>
             </thead>
         </table>
-
-
     </div>
 </div>
+
+
+
 @endsection
 @section('scripts')
 @parent
@@ -99,17 +100,19 @@
 { data: 'email', name: 'email' },
 { data: 'phone', name: 'phone' },
 { data: 'photo', name: 'photo', sortable: false, searchable: false },
-{ data: 'services', name: 'services.name' },
+{ data: 'services_name', name: 'services.name' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
+    orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
   };
-  $('.datatable-Employee').DataTable(dtOverrideGlobals);
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
-        $($.fn.dataTable.tables(true)).DataTable()
-            .columns.adjust();
-    });
+  let table = $('.datatable-Employee').DataTable(dtOverrideGlobals);
+  $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
+      $($.fn.dataTable.tables(true)).DataTable()
+          .columns.adjust();
+  });
+  
 });
 
 </script>

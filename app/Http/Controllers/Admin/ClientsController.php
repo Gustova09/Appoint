@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyClientRequest;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
+use App\Models\Client;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +16,8 @@ class ClientsController extends Controller
 {
     public function index(Request $request)
     {
+        abort_if(Gate::denies('client_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         if ($request->ajax()) {
             $query = Client::query()->select(sprintf('%s.*', (new Client)->table));
             $table = Datatables::of($query);
@@ -39,16 +41,16 @@ class ClientsController extends Controller
             });
 
             $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : "";
+                return $row->id ? $row->id : '';
             });
             $table->editColumn('name', function ($row) {
-                return $row->name ? $row->name : "";
+                return $row->name ? $row->name : '';
             });
             $table->editColumn('phone', function ($row) {
-                return $row->phone ? $row->phone : "";
+                return $row->phone ? $row->phone : '';
             });
             $table->editColumn('email', function ($row) {
-                return $row->email ? $row->email : "";
+                return $row->email ? $row->email : '';
             });
 
             $table->rawColumns(['actions', 'placeholder']);
@@ -105,7 +107,11 @@ class ClientsController extends Controller
 
     public function massDestroy(MassDestroyClientRequest $request)
     {
-        Client::whereIn('id', request('ids'))->delete();
+        $clients = Client::find(request('ids'));
+
+        foreach ($clients as $client) {
+            $client->delete();
+        }
 
         return response(null, Response::HTTP_NO_CONTENT);
     }

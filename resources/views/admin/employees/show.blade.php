@@ -7,7 +7,12 @@
     </div>
 
     <div class="card-body">
-        <div class="mb-2">
+        <div class="form-group">
+            <div class="form-group">
+                <a class="btn btn-default" href="{{ route('admin.employees.index') }}">
+                    {{ trans('global.back_to_list') }}
+                </a>
+            </div>
             <table class="table table-bordered table-striped">
                 <tbody>
                     <tr>
@@ -48,37 +53,31 @@
                         </th>
                         <td>
                             @if($employee->photo)
-                                <a href="{{ $employee->photo->getUrl() }}" target="_blank">
-                                    <img src="{{ $employee->photo->getUrl('thumb') }}" width="50px" height="50px">
+                                <a href="{{ $employee->photo->getUrl() }}" target="_blank" style="display: inline-block">
+                                    <img src="{{ $employee->photo->getUrl('thumb') }}">
                                 </a>
                             @endif
                         </td>
                     </tr>
                     <tr>
                         <th>
-                            Services
+                            {{ trans('cruds.employee.fields.services') }}
                         </th>
                         <td>
-                            @foreach($employee->services as $id => $services)
-                                <span class="label label-info label-many">{{ $services->name }}</span>
-                            @endforeach
+                            {{ $employee->services->name ?? '' }}
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <a style="margin-top:20px;" class="btn btn-default" href="{{ url()->previous() }}">
-                {{ trans('global.back_to_list') }}
-            </a>
-        </div>
-
-        <nav class="mb-3">
-            <div class="nav nav-tabs">
-
+            <div class="form-group">
+                <a class="btn btn-default" href="{{ route('admin.employees.index') }}">
+                    {{ trans('global.back_to_list') }}
+                </a>
             </div>
-        </nav>
-        <div class="tab-content">
-
         </div>
     </div>
 </div>
+
+
+
 @endsection

@@ -2,31 +2,28 @@
 
 namespace App\Http\Requests;
 
-use App\Employee;
+use App\Models\Employee;
 use Gate;
 use Illuminate\Foundation\Http\FormRequest;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Response;
 
 class UpdateEmployeeRequest extends FormRequest
 {
     public function authorize()
     {
-        abort_if(Gate::denies('employee_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        return true;
+        return Gate::allows('employee_edit');
     }
 
     public function rules()
     {
         return [
-            'name'       => [
+            'name' => [
+                'string',
                 'required',
             ],
-            'services.*' => [
-                'integer',
-            ],
-            'services'   => [
-                'array',
+            'phone' => [
+                'string',
+                'nullable',
             ],
         ];
     }

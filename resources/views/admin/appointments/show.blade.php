@@ -7,7 +7,12 @@
     </div>
 
     <div class="card-body">
-        <div class="mb-2">
+        <div class="form-group">
+            <div class="form-group">
+                <a class="btn btn-default" href="{{ route('admin.appointments.index') }}">
+                    {{ trans('global.back_to_list') }}
+                </a>
+            </div>
             <table class="table table-bordered table-striped">
                 <tbody>
                     <tr>
@@ -55,7 +60,7 @@
                             {{ trans('cruds.appointment.fields.price') }}
                         </th>
                         <td>
-                            ${{ $appointment->price }}
+                            {{ $appointment->price }}
                         </td>
                     </tr>
                     <tr>
@@ -63,27 +68,30 @@
                             {{ trans('cruds.appointment.fields.comments') }}
                         </th>
                         <td>
-                            {!! $appointment->comments !!}
+                            {{ $appointment->comments }}
                         </td>
                     </tr>
                     <tr>
                         <th>
-                            Services
+                            {{ trans('cruds.appointment.fields.services') }}
                         </th>
                         <td>
-                            @foreach($appointment->services as $id => $services)
-                                <span class="label label-info label-many">{{ $services->name }}</span>
+                            @foreach($appointment->services as $key => $services)
+                                <span class="label label-info">{{ $services->name }}</span>
                             @endforeach
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <a style="margin-top:20px;" class="btn btn-default" href="{{ url()->previous() }}">
-                {{ trans('global.back_to_list') }}
-            </a>
+            <div class="form-group">
+                <a class="btn btn-default" href="{{ route('admin.appointments.index') }}">
+                    {{ trans('global.back_to_list') }}
+                </a>
+            </div>
         </div>
-
-
     </div>
 </div>
+
+
+
 @endsection
